@@ -1,0 +1,60 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /auth   # todas as URLs vão começar com /auth
+
+spring:
+  application:
+    name: auth
+
+  # ====================== H2 CONFIGURAÇÕES (desenvolvimento rápido) ======================
+  h2:
+    console:
+      enabled: true          # ativa http://localhost:8081/h2-console
+      path: /h2-console      # URL do console
+      settings:
+        trace: false
+        web-allow-others: false   # só permite acesso local (seguro)
+
+  datasource:
+    url: jdbc:h2:mem:authdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update          # cria/atualiza tabelas automaticamente
+    show-sql: true              # mostra as queries no console (ótimo para aprender)
+    properties:
+      hibernate:
+        format_sql: true        # formata o SQL para ficar legível
+        dialect: org.hibernate.dialect.H2Dialect
+
+  # ====================== RABBITMQ (já configurado para o futuro) ======================
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+  # ====================== ACTUATOR (monitoramento para Kubernetes) ======================
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: health,info,metrics,prometheus   # endpoints úteis
+    endpoint:
+      health:
+        show-details: always
+
+  # ====================== JWT (segredo temporário - vamos melhorar depois) ======================
+jwt:
+  secret: "sua-chave-secreta-super-segura-aqui-2026-mude-isso-em-producao"
+  expiration: 900000   # 15 minutos em milissegundos (padrão bom)
+
+logging:
+  level:
+    com.codedemonbr: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
