@@ -10,12 +10,19 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConifg {
 
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/hello")
-                        .permitAll()
+                        .requestMatchers(
+                                "/hello",           // nosso hello world
+                                "/jwt-test/**",     // teste de token
+                                "/v3/api-docs/**",          // JSON da API
+                                "/swagger-ui/**",           // interface Swagger
+                                "/swagger-ui.html"          // página principal
+                        ).permitAll()
                         .requestMatchers("/actuator/**")
                         .permitAll()
                         .requestMatchers("/error")
