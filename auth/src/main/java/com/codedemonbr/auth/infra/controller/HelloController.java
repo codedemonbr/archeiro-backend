@@ -1,4 +1,4 @@
-package com.codedemonbr.auth.infrastructure.controller;
+package com.codedemonbr.auth.infra.controller;
 
 import com.codedemonbr.auth.dto.HelloResponse;
 import org.springframework.http.ResponseEntity;

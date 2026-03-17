@@ -1,4 +1,4 @@
-package com.codedemonbr.auth.infrastructure.controller;
+package com.codedemonbr.auth.infra.controller;
 
 import com.codedemonbr.auth.domain.JwtService;
 import org.springframework.http.ResponseEntity;
