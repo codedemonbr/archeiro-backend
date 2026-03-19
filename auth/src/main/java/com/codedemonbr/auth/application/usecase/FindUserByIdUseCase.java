@@ -15,6 +15,10 @@ public class FindUserByIdUseCase {
     private final UserRepositoryPort repositoryPort;
 
     public UserResponse execute(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID do usuário não pode ser nulo");
+        }
+
         return repositoryPort.findById(id)
                 .map(user -> new UserResponse(
                         user.getId(),
