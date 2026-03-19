@@ -1,6 +1,7 @@
 package com.codedemonbr.auth.infra.controller;
 
 import com.codedemonbr.auth.application.usecase.CreateUserUseCase;
+import com.codedemonbr.auth.application.usecase.FindUserByIdUseCase;
 import com.codedemonbr.auth.domain.exception.UserAlreadyExistsException;
 import com.codedemonbr.auth.dto.CreateUserRequest;
 import com.codedemonbr.auth.dto.UserResponse;
@@ -20,12 +21,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/auth")
 @Tag(name = "Usuários", description = "Endpoints de cadastro e autenticação")
-@RequiredArgsConstructor
 public class AuthController {
 
     private final CreateUserUseCase createUserUseCase;
+    private final FindUserByIdUseCase findUserByIdUseCase;
 
     @PostMapping("/users")
     @Operation(
@@ -50,6 +50,26 @@ public class AuthController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @GetMapping("/users/{id}")
+    @Operation(
+            summary = "Buscar usuário por ID",
+            description = "Retorna os dados de um usuário pelo seu ID"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
+        UserResponse response = findUserByIdUseCase.execute(id);
+        return ResponseEntity.ok(response);
+    }
+
+    public AuthController(CreateUserUseCase createUserUseCase,
+                          FindUserByIdUseCase findUserByIdUseCase) {
+        this.createUserUseCase = createUserUseCase;
+        this.findUserByIdUseCase = findUserByIdUseCase;
     }
 
     // Tratamento específico de exceção de negócio (melhor UX)

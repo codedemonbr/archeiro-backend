@@ -6,6 +6,8 @@ import com.codedemonbr.auth.infra.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 /**
  * ADAPTER DE SAÍDA (Infrastructure Layer)
  *
@@ -38,6 +40,11 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     @Override
     public User save(User user) {
         return jpaRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        return jpaRepository.findById(id);
     }
 
     // Se no futuro precisar de mais métodos (findById, delete, etc.), basta adicionar aqui
