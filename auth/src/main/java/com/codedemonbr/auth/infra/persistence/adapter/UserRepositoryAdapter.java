@@ -47,5 +47,10 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         return jpaRepository.findById(id);
     }
 
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return jpaRepository.findByEmail(email);
+    }
+
     // Se no futuro precisar de mais métodos (findById, delete, etc.), basta adicionar aqui
 }

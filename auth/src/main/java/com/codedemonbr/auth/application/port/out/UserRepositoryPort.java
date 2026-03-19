@@ -10,4 +10,6 @@ public interface UserRepositoryPort {
     boolean existsByCpf(String cpf);
     User save(User user);
     Optional<User> findById(Long id);
+    // === NOVO MÉTODO ===
+    Optional<User> findByEmail(String email);
 }

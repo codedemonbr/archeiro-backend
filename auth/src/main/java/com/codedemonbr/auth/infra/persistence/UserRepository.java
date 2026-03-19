@@ -23,6 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     Optional<User> findByCpf(String cpf);
 
+
     /**
      * Verifica se já existe um usuário com esse email
      * (útil para validações no UseCase)

@@ -2,8 +2,11 @@ package com.codedemonbr.auth.infra.controller;
 
 import com.codedemonbr.auth.application.usecase.CreateUserUseCase;
 import com.codedemonbr.auth.application.usecase.FindUserByIdUseCase;
+import com.codedemonbr.auth.application.usecase.LoginUseCase;
 import com.codedemonbr.auth.domain.exception.UserAlreadyExistsException;
 import com.codedemonbr.auth.dto.CreateUserRequest;
+import com.codedemonbr.auth.dto.LoginRequest;
+import com.codedemonbr.auth.dto.LoginResponse;
 import com.codedemonbr.auth.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,6 +29,8 @@ public class AuthController {
 
     private final CreateUserUseCase createUserUseCase;
     private final FindUserByIdUseCase findUserByIdUseCase;
+    private final LoginUseCase loginUseCase;
+
 
     @PostMapping("/users")
     @Operation(
@@ -52,6 +57,7 @@ public class AuthController {
         return ResponseEntity.created(location).body(response);
     }
 
+
     @GetMapping("/users/{id}")
     @Operation(
             summary = "Buscar usuário por ID",
@@ -66,10 +72,30 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    public AuthController(CreateUserUseCase createUserUseCase,
-                          FindUserByIdUseCase findUserByIdUseCase) {
+    @PostMapping("/login")
+    @Operation(
+            summary = "Autenticar usuário",
+            description = "Realiza login e retorna token JWT válido"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    })
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+        LoginResponse response = loginUseCase.execute(request);
+        return ResponseEntity.ok(response);
+    }
+
+    // No construtor:
+    public AuthController(
+            CreateUserUseCase createUserUseCase, 
+            FindUserByIdUseCase findUserByIdUseCase,
+            LoginUseCase loginUseCase
+    ) {
         this.createUserUseCase = createUserUseCase;
         this.findUserByIdUseCase = findUserByIdUseCase;
+        this.loginUseCase = loginUseCase;
+
     }
 
     // Tratamento específico de exceção de negócio (melhor UX)
