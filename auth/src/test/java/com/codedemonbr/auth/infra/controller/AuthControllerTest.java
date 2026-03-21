@@ -63,16 +63,47 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("POST /auth/users - Email duplicado → 409 Conflict")
+    @DisplayName("POST /users - Email duplicado → 409 Conflict")
     void shouldReturn409WhenEmailExists() throws Exception {
-        when(createUserUseCase.execute(any()))
+        when(createUserUseCase.execute(any(CreateUserRequest.class)))
                 .thenThrow(new UserAlreadyExistsException("email"));
 
-        String json = "{ \"nome\":\"Test\", \"cpf\":\"11111111111\", \"telefone\":\"(11)99999-9999\", \"email\":\"dup@test.com\", \"senha\":\"123\" }";
+        String json = """
+            {
+                "nome": "Teste Duplicado",
+                "cpf": "49387451003",
+                "telefone": "(11)99999-9999",
+                "email": "dup@test.com",
+                "senha": "senhaValida123"
+            }
+            """;
 
-        mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(json))
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("Já existe um usuário cadastrado com este email."));
+    }
+
+    @Test
+    @DisplayName("POST /users - Senha curta → 400 Bad Request (validação)")
+    void shouldReturn400WhenPasswordIsTooShort() throws Exception {
+        String json = """
+            {
+                "nome": "Teste",
+                "cpf": "06399973090",
+                "telefone": "(11)99999-9999",
+                "email": "teste@test.com",
+                "senha": "123"
+            }
+            """;
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].field").value("senha"))
+                .andExpect(jsonPath("$.errors[0].message").value("Senha deve ter no mínimo 8 caracteres"));
     }
 
     // ==================== BUSCA POR ID ====================
@@ -123,7 +154,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("POST /auth/login - Credenciais inválidas → 401")
+    @DisplayName("POST /login - Credenciais inválidas → 401")
     void shouldReturn401OnInvalidCredentials() throws Exception {
         when(loginUseCase.execute(any()))
                 .thenThrow(new AuthenticationException("Credenciais inválidas"));
